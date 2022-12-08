@@ -1,5 +1,6 @@
 import 'package:app/utils.dart' as utils;
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 // Model
 import 'package:app/model/event.dart';
@@ -43,9 +44,26 @@ class Page extends StatefulWidget {
 }
 
 class _PageState extends State<Page> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) => setState((){}));
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         decoration: BoxDecoration(
           gradient: utils.bgGradient,
@@ -96,7 +114,7 @@ class _PageState extends State<Page> {
     for (Event event in events) {
       temp.add(EventTile(
         title: event.title,
-        imagePath: event.imagePath,
+        imageIndex: event.imageIndex,
         targetDate: event.targetDate,
       ));
     }
@@ -105,10 +123,16 @@ class _PageState extends State<Page> {
       padding: const EdgeInsets.all(32),
       child: Center(
         child: OutlinedIconButton(
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const EditorPage()),
-          ).then((value) => setState(() {})),
+          onPressed: () {
+            _timer?.cancel();
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const EditorPage()),
+            ).then((value) {
+              setState(() {});
+              _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) => setState((){}));
+            });
+          },
           iconData: Icons.add,
         ),
       ),

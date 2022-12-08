@@ -1,16 +1,15 @@
 import 'package:app/utils.dart' as utils;
 import 'package:flutter/material.dart';
-import 'dart:async';
 
 class EventTile extends StatefulWidget {
   final String title;
-  final String imagePath;
+  final int imageIndex;
   final DateTime targetDate;
 
   const EventTile({
     super.key,
     required this.title,
-    required this.imagePath,
+    required this.imageIndex,
     required this.targetDate,
   });
 
@@ -19,21 +18,6 @@ class EventTile extends StatefulWidget {
 }
 
 class _EventTileState extends State<EventTile> {
-  Timer? _timer;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) => setState((){}));
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _timer?.cancel();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -47,6 +31,7 @@ class _EventTileState extends State<EventTile> {
             decoration: BoxDecoration(
               color: utils.color30,
               borderRadius: BorderRadius.circular(8),
+              boxShadow: [utils.boxShadow],
             ),
             child: Padding(
               padding: const EdgeInsets.only(left: 48),
@@ -63,7 +48,7 @@ class _EventTileState extends State<EventTile> {
                         ),
                         TextSpan(
                           text: " in",
-                          style: utils.h3TextStyle,
+                          style: utils.h4TextStyleAlt,
                         ),
                       ],
                     ),
@@ -93,6 +78,7 @@ class _EventTileState extends State<EventTile> {
               decoration: BoxDecoration(
                 color: utils.color30,
                 shape: BoxShape.circle,
+                boxShadow: [utils.boxShadow],
               ),
               child: Stack(
                 alignment: Alignment.center,
@@ -100,7 +86,7 @@ class _EventTileState extends State<EventTile> {
                 children: [
                   Transform.scale(
                     scale: .6,
-                    child: Image.asset(widget.imagePath),
+                    child: Image.asset("assets/images/${widget.imageIndex}.png"),
                   ),
                   CircularProgressIndicator(
                     value: .1,

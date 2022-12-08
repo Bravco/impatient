@@ -1,11 +1,11 @@
 class Event {
   final String title;
-  final String imagePath;
+  final int imageIndex;
   final DateTime targetDate;
 
   const Event({
     required this.title,
-    required this.imagePath,
+    required this.imageIndex,
     required this.targetDate,
   });
 }
