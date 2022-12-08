@@ -1,12 +1,13 @@
 import 'package:app/utils.dart' as utils;
+import 'package:app/boxes.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+// Pub
+import 'package:hive_flutter/hive_flutter.dart';
+
 // Model
 import 'package:app/model/event.dart';
-
-// Data
-import 'package:app/data/events.dart';
 
 // Widget
 import 'package:app/widget/event_tile.dart';
@@ -15,7 +16,14 @@ import 'package:app/widget/outlined_icon_button.dart';
 // Page
 import 'package:app/page/editor.dart';
 
-void main() {
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+
+  Hive.registerAdapter(EventAdapter());
+  await Hive.openBox<Event>("events");
+
   runApp(const MyApp());
 }
 
@@ -56,6 +64,7 @@ class _PageState extends State<Page> {
   @override
   void dispose() {
     _timer?.cancel();
+    Hive.close();
 
     super.dispose();
   }
@@ -98,8 +107,15 @@ class _PageState extends State<Page> {
               thickness: 2,
             ),
             Expanded(
-              child: ListView(
-                children: buildList(context),
+              child: ValueListenableBuilder<Box<Event>>(
+                valueListenable: Boxes.getEvents().listenable(),
+                builder: (context, box, _) {
+                  final events = box.values.toList().cast<Event>();
+
+                  return ListView(
+                    children: buildList(context, events),
+                  );
+                },
               ),
             ),
           ],
@@ -108,17 +124,13 @@ class _PageState extends State<Page> {
     );
   }
 
-  List<Widget> buildList(BuildContext context) {
+  List<Widget> buildList(BuildContext context, List<Event> events) {
     List<Widget> temp = [];
 
     for (Event event in events) {
-      temp.add(EventTile(
-        title: event.title,
-        imageIndex: event.imageIndex,
-        targetDate: event.targetDate,
-      ));
+      temp.add(EventTile(event: event));
     }
-
+    
     temp.add(Padding(
       padding: const EdgeInsets.all(32),
       child: Center(
