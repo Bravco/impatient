@@ -30,7 +30,11 @@ class _EventTileState extends State<EventTile> {
       widget.event.targetDate.difference(widget.event.createdDate).inMinutes
     );
 
-    return value;
+    if (DateTime.now().difference(widget.event.targetDate).inSeconds > 0) {
+      return 1.0;
+    } else {
+      return value;
+    }
   }
 
   @override
@@ -106,11 +110,21 @@ class _EventTileState extends State<EventTile> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
+                    DateTime.now().difference(widget.event.targetDate).inSeconds < 0
+                    ? Text(
       "${DateTime.now().difference(widget.event.targetDate).abs().inDays}:"
       "${DateTime.now().difference(widget.event.targetDate).abs().inHours - DateTime.now().difference(widget.event.targetDate).abs().inDays * 24}:"
       "${DateTime.now().difference(widget.event.targetDate).abs().inMinutes - DateTime.now().difference(widget.event.targetDate).abs().inHours * 60}:"
       "${DateTime.now().difference(widget.event.targetDate).abs().inSeconds - DateTime.now().difference(widget.event.targetDate).abs().inMinutes * 60}",
+                      style: TextStyle(
+                        fontFamily: "RobotoMono",
+                        color: utils.color10,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    )
+                    : Text(
+                      "Completed",
                       style: TextStyle(
                         fontFamily: "RobotoMono",
                         color: utils.color10,
